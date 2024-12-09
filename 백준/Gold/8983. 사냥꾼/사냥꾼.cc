@@ -5,66 +5,44 @@
 using namespace std;
 typedef pair<int, int> pi;
 
-int M, N, L, cnt;
-int hunter[MAX];
-pi animal[MAX];
+int M, N, L;
+int arr[MAX];
+pi p[MAX];
 
 void init() {
-  for(int i = 0; i < M; i++) {
-    cin >> hunter[i];
-  }
-  sort(hunter, hunter + M);
-  for(int i = 0; i < N; i++) {
-    cin >> animal[i].first >> animal[i].second;
-  }
-}
-
-int dist(int x, pi p) {
-  return abs(x - p.first) + p.second;
-}
-
-int lower_bound(int a) {
-  int left = -1, mid = 0, right = N;
-  while(left + 1 < right) {
-    mid = (left + right) / 2;
-    if(mid < a) {
-      left = mid;
-    } else {
-      right = mid;
+    cin >> M >> N >> L;
+    for(int i = 0; i < M; i++) {
+        cin >> arr[i];
     }
-  }
-  return right;
-}
-
-int upper_bound(int a) {
-  int left = -1, mid = 0, right = N;
-  while(left + 1 < right) {
-    mid = (left + right) / 2;
-    if(mid <= a) {
-      left = mid;
-    } else {
-      right = mid;
+    sort(arr, arr + M);
+    for(int i = 0; i < N; i++) {
+        cin >> p[i].first >> p[i].second;
     }
-  }
-  return left;
 }
 
 void solve() {
-  cnt = 0;
-  for(int i = 0; i < N; i++) {
-    pi p = animal[i];
-    int x1 = lower_bound(p.first);
-    int x2 = upper_bound(p.second);
-    if(min(dist(x1, p), dist(x2, p)) <= L) {
-      cnt++;
+    int result = 0;
+    for(int i = 0; i < N; i++){
+        int l = -1, r = M, mid;
+        while(l + 1 < r){
+            mid = l + (r - l) / 2;
+            int cal = abs(arr[mid] - p[i].first) + p[i].second;
+            if(cal <= L){
+                result++;
+                break;
+            }
+            else if(p[i].first >= arr[mid]) {
+              l = mid;
+            } else{
+              r = mid;
+            }
+        }
     }
-  }
-  cout << cnt << '\n';
+    cout << result;
 }
 
 int main() {
-  ios::sync_with_stdio(0); cin.tie(NULL);
-  cin >> M >> N >> L;
+  ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
   init();
   solve();
   return 0;
