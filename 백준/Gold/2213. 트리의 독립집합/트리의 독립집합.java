@@ -31,11 +31,15 @@ public class Main {
   }
 
   static void dfs3(int cur, boolean selectable, List<Integer> list) {
-    if(selectable && dp[cur][0] < dp[cur][1]) list.add(cur);
+    boolean selected = selectable && dp[cur][0] < dp[cur][1];
+    if(selected) list.add(cur);
     for(int nxt : tree[cur]) {
       if (depth[cur] > depth[nxt]) continue;
-      if(selectable && dp[cur][0] < dp[cur][1]) dfs3(nxt, false, list);
-      else dfs3(nxt, true, list);
+      if(selected) {
+        dfs3(nxt, false, list);
+      } else {
+        dfs3(nxt, true, list);
+      }
     }
   }
 
