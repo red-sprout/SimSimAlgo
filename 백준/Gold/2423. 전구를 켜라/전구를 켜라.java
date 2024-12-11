@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
 	static int N, M;
 	static char[][] map;
-	static int[] dr = {-1, 1, -1, 1};
+	static int[] dr = {-1, 1, -1, 1}; // 좌상, 좌하, 우상, 우하
 	static int[] dc = {-1, -1, 1, 1};
 	static int bfs() {
 		Deque<int[]> deque = new ArrayDeque<>();
@@ -21,10 +21,10 @@ public class Main {
 				boolean connected = isConnected(cur[0], cur[1], i);
 				if(!visited[nr][nc][0] && connected) {
 					visited[nr][nc][0] = true;
-					deque.offerFirst(new int[] {nr, nc, cur[2], i});
+					deque.offerFirst(new int[] {nr, nc, cur[2]});
 				} else if(!visited[nr][nc][1] && !connected) {
 					visited[nr][nc][1] = true;
-					deque.offerLast(new int[] {nr, nc, cur[2] + 1, i});
+					deque.offerLast(new int[] {nr, nc, cur[2] + 1});
 				}
 			}
 		}
