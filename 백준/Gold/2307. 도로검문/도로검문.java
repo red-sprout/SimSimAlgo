@@ -23,9 +23,15 @@ public class Main {
 	
 	static int N, M, first, max;
 	static List<Edge>[] graph;
-	static Edge[] edges;
+	static int[] edges;
 	
-	static int dijkstra(boolean init) {
+	static boolean check(Edge cur, Edge nxt, int u1, int u2) {
+		if(cur.u == u1 && nxt.u == u2) return false;
+		if(cur.u == u2 && nxt.u == u1) return false;
+		return true;
+	}
+	
+	static int dijkstra(boolean init, int u, int v) {
 		int[] dist = new int[N + 1];
 		Arrays.fill(dist, Integer.MAX_VALUE);
 		boolean[] visited = new boolean[N + 1];
@@ -38,29 +44,14 @@ public class Main {
 			if(visited[cur.u]) continue;
 			visited[cur.u] = true;
 			for(Edge nxt : graph[cur.u]) {
-				if(!visited[nxt.u] && nxt.t != -1 && dist[nxt.u] > dist[cur.u] + nxt.t) {
+				if(!visited[nxt.u] && check(cur, nxt, u, v) && dist[nxt.u] > dist[cur.u] + nxt.t) {
 					dist[nxt.u] = dist[cur.u] + nxt.t;
 					pq.offer(new Edge(nxt.u, dist[nxt.u]));
-					if(init) edges[nxt.u] = new Edge(cur.u, nxt.t);
+					if(init) edges[nxt.u] = cur.u;
 				}
 			}
 		}
 		return Integer.MAX_VALUE;
-	}
-	
-	static void setEdge(int u, int v, int d) {
-		for(Edge e : graph[u]) {
-			if(e.u == v) {
-				e.t = d;
-				break;
-			}
-		}
-		for(Edge e : graph[v]) {
-			if(e.u == u) {
-				e.t = d;
-				break;
-			}
-		}
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -74,7 +65,7 @@ public class Main {
 		for(int i = 1; i <= N; i++) {
 			graph[i] = new ArrayList<>();
 		}
-		edges = new Edge[N + 1];
+		edges = new int[N + 1];
 		
 		for(int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine(), " ");
@@ -84,16 +75,13 @@ public class Main {
 			graph[a].add(new Edge(b, t));
 			graph[b].add(new Edge(a, t));
 		}
-		first = dijkstra(true);
+		first = dijkstra(true, 0, 0);
 		max = first;
 		
 		int v = N;
 		while(v != 1) {
-			int u = edges[v].u;
-			int d = edges[v].t;
-			setEdge(u, v, -1);
-			max = Math.max(max, dijkstra(false));
-			setEdge(u, v, d);
+			int u = edges[v];
+			max = Math.max(max, dijkstra(false, u, v));
 			v = u;
 		}
 		
