@@ -23,6 +23,7 @@ public class Main {
 	static long dijkstra() {
 		long[] dist = new long[n + 1];
 		Arrays.fill(dist, Long.MAX_VALUE);
+		boolean[] visited = new boolean[n + 1];
 		PriorityQueue<Edge> pq = new PriorityQueue<>();
 		dist[1] = 0;
 		pq.offer(new Edge(1, 0));
@@ -31,9 +32,12 @@ public class Main {
 			Edge cur = pq.poll();
 			int now = cur.now;
 			long cost = cur.cost;
-			long cnt = cur.cost / m;
-			long order = cur.cost % m;
+			long cnt = cost / m;
+			long order = cost % m;
+			
 			if(now == n) return dist[n];
+			if(visited[now]) continue;
+			visited[now] = true;
 			
 			for(Edge nxt : graph[now]) {
 				int next = nxt.now;
@@ -41,13 +45,13 @@ public class Main {
 				
 				if(order + 1 > norder) {
 					long ncost = (cnt + 1) * m + norder;
-					if(dist[next] > ncost) {
+					if(!visited[next] && dist[next] > ncost) {
 						dist[next] = ncost;
 						pq.offer(new Edge(next, ncost));
 					}
 				} else {
 					long ncost = cnt * m + norder;
-					if(dist[next] > ncost) {
+					if(!visited[next] && dist[next] > ncost) {
 						dist[next] = ncost;
 						pq.offer(new Edge(next, ncost));
 					}
