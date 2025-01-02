@@ -22,13 +22,13 @@ public class Main {
 	static boolean connect(int target) {
 		int[] cost = new int[n + 1];
 		Arrays.fill(cost, Integer.MAX_VALUE);
-		PriorityQueue<Pair> q = new PriorityQueue<>((p1, p2) -> p1.s - p2.s);
+		Deque<Pair> q = new ArrayDeque<>();
 		boolean[] visited = new boolean[n + 1];
 		cost[1] = 0;
-		q.offer(new Pair(1, 0));
+		q.offerLast(new Pair(1, 0));
 		
 		while(!q.isEmpty()) {
-			Pair cur = q.poll();
+			Pair cur = q.pollFirst();
 			int u = cur.f, cnt = cur.s;
 			if(u == n) return true;
 			if(visited[u]) continue;
@@ -37,10 +37,10 @@ public class Main {
 				if(visited[e.f]) continue;
 				if(e.s <= target && cost[e.f] > cnt) {
 					cost[e.f] = cnt;
-					q.offer(new Pair(e.f, cnt));
+					q.offerFirst(new Pair(e.f, cnt));
 				} else if(cnt < k && cost[e.f] > cnt + 1) {
 					cost[e.f] = cnt + 1;
-					q.offer(new Pair(e.f, cnt + 1));
+					q.offerLast(new Pair(e.f, cnt + 1));
 				}
 			}
 		}
