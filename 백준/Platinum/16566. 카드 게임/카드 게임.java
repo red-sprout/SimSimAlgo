@@ -12,8 +12,10 @@ public class Main {
 	}
 	
 	static void union(int x, int y) {
-		if(y >= m) return;
-		parent[x] = y;
+        if(y >= m) return;
+		x = find(x);
+		y = find(y);
+		if(x != y) parent[x] = y;
 	}
 	
 	static int query(int x) {
