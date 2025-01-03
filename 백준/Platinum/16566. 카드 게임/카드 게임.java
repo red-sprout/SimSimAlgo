@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
 	static int n, m, k;
-	static List<Integer> list;
+	static int[] arr;
 	static int[] parent;
 	
 	static int find(int x) {
@@ -12,23 +12,16 @@ public class Main {
 	}
 	
 	static void union(int x, int y) {
-		x = find(x);
-		y = find(y);
-		if(x == y) return;
-		
-		if(x > y) {
-			parent[y] = x;
-		} else {
-			parent[x] = y;
-		}
+		if(y >= m) return;
+		parent[x] = y;
 	}
 	
 	static int query(int x) {
 		int left = -1;
-		int right = m + 1;
+		int right = m;
 		while(left + 1 < right) {
 			int mid = (left + right) / 2;
-			if(list.get(mid) > x) {
+			if(arr[mid] > x) {
 				right = mid;
 			} else {
 				left = mid;
@@ -36,7 +29,7 @@ public class Main {
 		}
 		int idx = find(right);
 		union(idx, idx + 1);
-		return list.get(idx);
+		return arr[idx];
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -48,15 +41,15 @@ public class Main {
 		n = Integer.parseInt(st.nextToken());
 		m = Integer.parseInt(st.nextToken());
 		k = Integer.parseInt(st.nextToken());
-		list = new ArrayList<>(m);
-		parent = new int[m + 1];
+		arr = new int[m];
+		parent = new int[m];
 		
 		st = new StringTokenizer(br.readLine(), " ");
 		for(int i = 0; i < m; i++) {
-			list.add(Integer.parseInt(st.nextToken()));
+			arr[i] = Integer.parseInt(st.nextToken());
 			parent[i] = i;
 		}
-		Collections.sort(list);
+		Arrays.sort(arr);
 		
 		st = new StringTokenizer(br.readLine(), " ");
 		for(int i = 0; i < k; i++) {
