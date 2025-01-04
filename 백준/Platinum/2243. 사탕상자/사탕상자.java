@@ -1,54 +1,68 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
-	public static int[] tree;
-	public static final int MAX = 1_000_000;
-	public static void main(String[] args) throws IOException {
+	static int MAX, SIZE;
+	static int[] tree;
+	
+	static void update(int node, int s, int e, int idx, int val) {
+		if(e < idx || idx < s) return;
+		if(s == e) {
+			tree[node] += val;
+			return;
+		}
+		int mid = (s + e) >> 1;
+		update(node << 1, s, mid, idx, val);
+		update(node << 1 | 1, mid + 1, e, idx, val);
+		tree[node] = tree[node << 1] + tree[node << 1 | 1];
+	}
+	
+	static int get(int node, int s, int e, int k) {
+		if(s == e) return s;
+		int mid = (s + e) >> 1;
+		int left = tree[node << 1];
+		if(k <= left) {
+			return get(node << 1, s, mid, k);
+		} else {
+			return get(node << 1 | 1, mid + 1, e, k - left);
+		}
+	}
+	
+	static void update(int idx, int val) {
+		update(1, 1, MAX, idx, val);
+	}
+	
+	static int get(int k) {
+		int idx = get(1, 1, MAX, k);
+		update(1, 1, MAX, idx, -1);
+		return idx;
+	}
+	
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
-		int n = Integer.parseInt(br.readLine());
-		int h = (int)Math.ceil(Math.log(MAX) / Math.log(2));
-		int size = 1 << (h + 1);
-		tree = new int[size];
+		StringTokenizer st = null;
 		
-		String[] info = null;
-		for(int i = 0; i < n ; i++) {
-			info = br.readLine().split(" ");
-			int a = Integer.parseInt(info[0]);
-			int b = Integer.parseInt(info[1]);
+		int n = Integer.parseInt(br.readLine());
+		MAX = 1_000_000;
+		SIZE = 1 << ((int) Math.ceil(Math.log(MAX) / Math.log(2)) + 1);
+		tree = new int[SIZE];
+		
+		int a, b, c;
+		while(n-- > 0) {
+			st = new StringTokenizer(br.readLine(), " ");
+			a = Integer.parseInt(st.nextToken());
 			if(a == 1) {
-				sb.append(query(1, 1, MAX, b)).append("\n");
+				b = Integer.parseInt(st.nextToken());
+				sb.append(get(b)).append('\n');
 			} else {
-				int c = Integer.parseInt(info[2]);
-				update(1, 1, MAX, b, c);
+				b = Integer.parseInt(st.nextToken());
+				c = Integer.parseInt(st.nextToken());
+				update(b, c);
 			}
 		}
 		
-		System.out.print(sb.toString());
+		System.out.print(sb);
 		br.close();
-	}
-	
-	public static int query(int node, int s, int e, int rank) {
-		if(s == e) {
-			update(1, 1, MAX, s, -1);
-			return s;
-		}
-		
-		int mid = (s + e) / 2;
-		if(tree[node * 2] >= rank) {
-			return query(node * 2, s, mid, rank);
-		}
-		
-		return query(node * 2 + 1, mid + 1, e, rank - tree[node * 2]);
-	}
-	
-	public static void update(int node, int s, int e, int taste, int cnt) {
-		if(taste < s || e < taste) return;
-		tree[node] += cnt;
-		if(s == e) return;
-		
-		int mid = (s + e) / 2;
-		update(node * 2, s, mid, taste, cnt);
-		update(node * 2 + 1, mid + 1, e, taste, cnt);
 	}
 }
