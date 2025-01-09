@@ -26,7 +26,7 @@ public class Main {
                 char c = word.charAt(i);
                 if(cur.next[c - 'a'] == null) return false;
                 cur = cur.next[c - 'a'];
-                if(cur.isEnd && back.contains(word.substring(i + 1))) return true;
+                if(cur.isEnd && back.contains(hashing(word, i + 1))) return true;
             }
             return false;
         }
@@ -34,7 +34,16 @@ public class Main {
 
     static int c, n;
     static Trie front;
-    static HashSet<String> back;
+    static HashSet<Long> back;
+    
+    static long hashing(String word, int s) {
+    	long hash = 0;
+    	int p = 31;
+    	for(int i = s; i < word.length(); i++) {
+    		hash = hash * p + word.charAt(i);
+    	}
+    	return hash;
+    }
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -52,7 +61,7 @@ public class Main {
 
         for(int i = 0; i < n; i++) {
             String word = br.readLine();
-            back.add(word);
+            back.add(hashing(word, 0));
         }
 
         int q = Integer.parseInt(br.readLine());
