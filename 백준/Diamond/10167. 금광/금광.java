@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static class Point {
+	static class Point implements Comparable<Point>{
 		long x, y, v; int i;
 		
 		public Point(long x, long y, long v, int i) {
@@ -12,6 +12,11 @@ public class Main {
 		@Override
 		public String toString() {
 			return "[" + x + ", " + y + ", " + v + ", " + i + "]";
+		}
+
+		@Override
+		public int compareTo(Point p) {
+			return this.y == p.y ? Long.compare(this.x, p.x) : Long.compare(this.y, p.y);
 		}
 	}
 	
@@ -30,13 +35,9 @@ public class Main {
 	
 	static class Node {
 		long left, right, mid, all;
-		
-		public void update(long v) {
-			left = right = mid = all += v;
-		}
 	}
 	
-	static int n, size;
+	static int n, m, size;
 	static Node[] tree;
 	static Point[] point;
 	static Pair[] tmpX, tmpY;
@@ -65,12 +66,13 @@ public class Main {
 		}
 		point[tmpY[n - 1].idx].y = iy;
 		
-		Arrays.sort(point, (p1, p2) -> Long.compare(p1.y, p2.y));
+		Arrays.sort(point);
 	}
 	
 	static void init() {
 		for(int i = 0; i < size; i++) {
-			tree[i].left = tree[i].right = tree[i].mid = tree[i].all = 0;
+			tree[i].left = tree[i].right = tree[i].mid = (long) (-1e14);
+			tree[i].all = 0;
 		}
 	}
 	
@@ -83,16 +85,13 @@ public class Main {
 		return node;
 	}
 	
-	static void update(int node, int s, int e, int idx, long val) {
-		if(e < idx || idx < s) return;
-		if(s == e) {
-			tree[node].update(val);
-			return;
+	static void update(int idx, long val) {
+		idx += m;
+		tree[idx].all += val;
+		tree[idx].left = tree[idx].right = tree[idx].mid = tree[idx].all;
+		while((idx >>= 1) > 0) {			
+			tree[idx] = merge(tree[idx << 1], tree[idx << 1 | 1]);
 		}
-		int mid = (s + e) >> 1;
-		update(node << 1, s, mid, idx, val);
-		update(node << 1 | 1, mid + 1, e, idx, val);
-		tree[node] = merge(tree[node << 1], tree[node << 1 | 1]);
 	}
 	
     public static void main(String[] args) throws Exception {
@@ -100,7 +99,8 @@ public class Main {
     	StringTokenizer st = null;
     	
     	n = Integer.parseInt(br.readLine());
-    	size = 1 << ((int) Math.ceil(Math.log(n) / Math.log(2)) + 1);
+    	m = 1 << (int) Math.ceil(Math.log(n) / Math.log(2));
+    	size = m << 1;
     	tree = new Node[size];
     	for(int i = 0; i < size; i++) tree[i] = new Node();
     	point = new Point[n];
@@ -115,10 +115,11 @@ public class Main {
     	
     	long res = 0;
     	for(int i = 0; i < n; i++) {
+    		if(i > 0 && point[i - 1].y == point[i].y) continue;
     		init();
     		for(int j = i; j < n; j++) {
-    			update(1, 0, n - 1, (int) point[j].x, point[j].v);
-    			res = Math.max(res, tree[1].mid);
+    			update((int) point[j].x, point[j].v);
+    			if(j == n - 1 || point[j].y != point[j + 1].y) res = Math.max(res, tree[1].mid);
     		}
     	}
     	
