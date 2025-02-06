@@ -29,6 +29,7 @@ public class Main {
         int cnt = 0;
         while(!q.isEmpty()) {
             Edge cur = q.poll();
+            if(dist[k] < cur.s) break;
             if(cur.f == k) {
                 cnt++;
                 continue;
