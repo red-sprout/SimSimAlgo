@@ -21,20 +21,20 @@ int dc[] = { 0, -1, 0, 1 };
 int bfs(pii s) {
     int res = 0;
     while (!q.empty()) q.pop();
-    char c = map[s.first][s.second];
+    char* c = &map[s.first][s.second];
     if ((v[s.first][s.second] | keys) == v[s.first][s.second]) return 0;
-    if (c == '$') {
+    if (*c == '$') {
         res++;
-        map[s.first][s.second] = '.';
+        *c = '.';
         v[s.first][s.second] = keys;
         q.emplace(make_tuple(s.first, s.second, keys));
     }
-    else if ('a' <= c && c <= 'z') {
-        keys |= 1 << (c - 'a');
+    else if ('a' <= *c && *c <= 'z') {
+        keys |= 1 << (*c - 'a');
         v[s.first][s.second] = keys;
         q.emplace(make_tuple(s.first, s.second, keys));
     }
-    else if (c == '.' || (keys & (1 << (c - 'A'))) != 0) {
+    else if (*c == '.' || (keys & (1 << (*c - 'A'))) != 0) {
         v[s.first][s.second] = keys;
         q.emplace(make_tuple(s.first, s.second, v[s.first][s.second]));
     }
@@ -50,15 +50,15 @@ int bfs(pii s) {
             nk = get<2>(cur);
             if (nr < 0 || nr >= h || nc < 0 || nc >= w || map[nr][nc] == '*') continue;
 
-            char* nn = &map[nr][nc];
-            if ('A' <= *nn && *nn <= 'Z' && (nk & (1 << (*nn - 'A'))) == 0) continue;
-            if (*nn == '$') {
+            c = &map[nr][nc];
+            if ('A' <= *c && *c <= 'Z' && (nk & (1 << (*c - 'A'))) == 0) continue;
+            if (*c == '$') {
                 res++;
-                *nn = '.';
+                *c = '.';
             }
 
-            if ('a' <= *nn && *nn <= 'z') {
-                nk |= 1 << (*nn - 'a');
+            if ('a' <= *c && *c <= 'z') {
+                nk |= 1 << (*c - 'a');
                 keys |= nk;
             }
 
