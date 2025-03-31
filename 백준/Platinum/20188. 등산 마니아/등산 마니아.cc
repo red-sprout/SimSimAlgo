@@ -9,7 +9,7 @@ int n;
 ll dp[MAX];
 vector<int> tree[MAX];
 
-ll comb(int x) {
+ll comb(ll x) {
 	return x * (x - 1) / 2;
 }
 
@@ -35,9 +35,9 @@ int main() {
 	}
 	dfs(1);
 	ll res = 0;
-	for (int i = 1; i < n + 1; ++i) {
+	for (int i = 2; i < n + 1; ++i) {
 		res += comb(n) - comb(n - dp[i]);
 	}
-	cout << res - comb(n) << '\n';
+	cout << res << '\n';
 	return 0;
 }
