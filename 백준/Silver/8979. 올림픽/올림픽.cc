@@ -36,10 +36,14 @@ int main() {
 	}
 	sort(list.begin(), list.end(), comp);
 
-	int rank = 0;
+	int rank = 0, cnt = 1;
 	for (int i = 0; i < n; ++i) {
 		if (i == 0 || !is_same_country(list[i - 1], list[i])) {
-			++rank;
+			rank += cnt;
+			cnt = 1;
+		}
+		else {
+			++cnt;
 		}
 		if (list[i].id == k) {
 			cout << rank << '\n';
