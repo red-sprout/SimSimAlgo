@@ -1,52 +1,54 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <cstring>
 #define INF 1'000'000'001
 #define SZ 1'000'001
 
 using namespace std;
 typedef pair<int, int> pii;
 
-struct edge {
-	int v; int d; int u;
-	edge(int V, int D, int U) {
-		v = V; d = D; u = U;
-	}
-};
-
 struct comp {
-	bool operator()(const edge e1, const edge e2) {
-		return e1.d > e2.d;
+	bool operator()(const pii e1, const pii e2) {
+		return e1.second > e2.second;
 	}
 };
 
 int n, s, e;
-int dist[SZ][2];
-bool v[SZ][2];
-priority_queue<edge, vector<edge>, comp> pq;
+int dist[SZ];
+int p[SZ];
+bool v[SZ];
+priority_queue<pii, vector<pii>, comp> pq;
 vector<pii> g[SZ];
 
 int dijkstra() {
-	pq.emplace(edge(s, 0, 0));
+	pq.emplace(make_pair(s, 0));
 	while (!pq.empty()) {
-		edge cur = pq.top(); pq.pop();
-		if (cur.v == e) return cur.d;
-		if (v[cur.v][cur.u]) continue;
-		v[cur.v][cur.u] = true;
-		for (pii nxt : g[cur.v]) {
-			if (!v[nxt.first][cur.u] && dist[nxt.first][cur.u] > cur.d + nxt.second) {
-				dist[nxt.first][cur.u] = cur.d + nxt.second;
-				pq.emplace(edge(nxt.first, dist[nxt.first][cur.u], cur.u));
-			}
-			if (cur.u == 0 && !v[nxt.first][1] && dist[nxt.first][1] > cur.d) {
-				dist[nxt.first][1] = cur.d;
-				pq.emplace(edge(nxt.first, dist[nxt.first][1], 1));
+		pii cur = pq.top(); pq.pop();
+		if (cur.first == e) return cur.second;
+		if (v[cur.first]) continue;
+		v[cur.first] = true;
+		for (pii nxt : g[cur.first]) {
+			if (!v[nxt.first] && dist[nxt.first] > cur.second + nxt.second) {
+				dist[nxt.first] = cur.second + nxt.second;
+				p[nxt.first] = cur.first;
+				pq.emplace(make_pair(nxt.first, dist[nxt.first]));
 			}
 		}
 	}
 
-	return -1;
+	return 0;
+}
+
+int path() {
+	int res = 0;
+	for (int cur = e; p[cur] != -1; cur = p[cur]) {
+		for (pii nxt : g[cur]) {
+			if (nxt.first == p[cur]) {
+				res = max(res, nxt.second);
+			}
+		}
+	}
+	return res;
 }
 
 int main() {
@@ -58,8 +60,9 @@ int main() {
 		g[a].emplace_back(make_pair(b, c));
 		g[b].emplace_back(make_pair(a, c));
 	}
-	memset(dist, INF, sizeof(dist));
-	memset(v, false, sizeof(v));
-	cout << dijkstra() << '\n';
+	fill(dist + 1, dist + n + 1, INF);
+	fill(p + 1, p + n + 1, -1);
+	fill(v + 1, v + n + 1, false);
+	cout << (s != e ? dijkstra() - path() : 0) << '\n';
 	return 0;
 }
