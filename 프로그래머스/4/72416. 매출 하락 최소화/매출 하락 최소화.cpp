@@ -1,31 +1,42 @@
 #include <string>
 #include <vector>
-#include <iostream>
-#include <unordered_set>
+#include <cstring>
 
 using namespace std;
 
 int n;
 vector<int> tree[300'001];
 int sale[300'001];
-int depth[300'001];
-unordered_set<int> team[300'001];
-bool t[300'001];
-bool v[300'001];
+int dp[300'001][2];
 
-void dfs1(int cur, int d) {
-    depth[cur] = d;
-    if(tree[cur].empty()) return;
-    team[cur].insert(cur);
-    for(int nxt : tree[cur]) {
-        dfs1(nxt, d + 1);
-        team[nxt].insert(cur);
-    }
-}
-
-// int dfs2(int cur) {
+int dfs(int cur, int d) {
+    if(tree[cur].empty()) return 0;
+    if(dp[cur][d] != -1) return dp[cur][d];
     
-// }
+    int* res = &dp[cur][d];
+    *res = 0;
+    bool flag = true;
+    int diff = 1'000'000'000;
+    for(int nxt : tree[cur]) {
+        int ns = dfs(nxt, 0);
+        int s = dfs(nxt, 1) + sale[nxt];
+        *res += min(ns, s);
+        if(d == 0) {
+            if(ns > s) {
+                flag = false;
+            } else {
+                diff = min(diff, s - ns);
+            }
+        } else {
+            flag = false;
+        }
+    }
+    
+    if(flag) {
+        *res += diff;
+    }
+    return *res;
+}
 
 void init(vector<int> sales, vector<vector<int>> links) {
     n = sales.size();
@@ -37,19 +48,11 @@ void init(vector<int> sales, vector<vector<int>> links) {
     }
 }
 
-void print() {
-    for(int i = 1; i <= n; ++i) {
-        for(auto ele = team[i].begin(); ele != team[i].end(); ++ele) {
-            cout << *ele << ' ';
-        }
-        cout << '\n';
-    }
-}
-
 int solution(vector<int> sales, vector<vector<int>> links) {
     init(sales, links);
-    dfs1(1, 1);
-    print();
-    // dfs2();
-    return 0;
+    memset(dp, -1, sizeof(dp));
+    int res = dfs(1, 0);
+    memset(dp, -1, sizeof(dp));
+    res = min(res, dfs(1, 1) + sale[1]);
+    return res;
 }
