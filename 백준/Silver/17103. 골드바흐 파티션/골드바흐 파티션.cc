@@ -1,11 +1,11 @@
 #include <iostream>
-#include <set>
+#include <unordered_set>
 #define SZ 1'000'001
 
 using namespace std;
 
 bool is_prime[SZ];
-set<int> us;
+unordered_set<int> us;
 
 void init() {
     fill(is_prime, is_prime + SZ, true);
@@ -28,7 +28,7 @@ int main() {
         cin >> n;
         cnt = 0;
         for (auto p = us.begin(); p != us.end(); ++p) {
-            if (n / 2 < *p) break;
+            if(n / 2 < *p) continue;
             if (us.find(n - *p) != us.end()) ++cnt;
         }
         cout << cnt << '\n';
