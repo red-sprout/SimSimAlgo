@@ -11,37 +11,15 @@ int main() {
     }
 
     deque<int> a;
-    if (x > 0 && b > 0) {
+    if (b > 0) {
+        bool flag = x < 0;
+        if (flag) x = -x;
         while (x != 0) {
             int mod = x % b;
             x = x / b;
             a.emplace_back(mod);
         }
-        while (!a.empty()) {
-            cout << a.back();
-            a.pop_back();
-        }
-        cout << '\n';
-    } else if (x > 0 && b < 0) {
-        while (x != 0) {
-            int mod = x % b;
-            if (mod < 0) mod -= b;
-            x = (x - mod) / b;
-            a.emplace_back(mod);
-        }
-        while (!a.empty()) {
-            cout << a.back();
-            a.pop_back();
-        }
-        cout << '\n';
-    } else if (x < 0 && b > 0) {
-        x = -x;
-        while (x != 0) {
-            int mod = x % b;
-            x = x / b;
-            a.emplace_back(mod);
-        }
-        cout << '-';
+        if (flag) cout << '-';
         while (!a.empty()) {
             cout << a.back();
             a.pop_back();
