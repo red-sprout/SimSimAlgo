@@ -1,37 +1,26 @@
-SELECT D.GRADE,
+WITH FRONTEND AS (
+    SELECT SUM(CODE) AS CODE
+    FROM SKILLCODES 
+    WHERE CATEGORY = 'Front End'
+), PYTHON AS (
+    SELECT CODE
+    FROM SKILLCODES
+    WHERE NAME = 'Python'
+), CSHARP AS (
+    SELECT CODE
+    FROM SKILLCODES 
+    WHERE NAME = 'C#'
+)
+
+SELECT
+    CASE
+        WHEN D.SKILL_CODE & F.CODE != 0 AND D.SKILL_CODE & P.CODE != 0 THEN 'A'
+        WHEN D.SKILL_CODE & C.CODE != 0 THEN 'B'
+        WHEN D.SKILL_CODE & F.CODE != 0 THEN 'C'
+    END AS GRADE,
     D.ID,
     D.EMAIL
-FROM (
-    SELECT 
-        CASE
-            WHEN EXISTS (
-                SELECT 1 
-                FROM SKILLCODES S 
-                WHERE S.CATEGORY = 'Front End' 
-                AND (S.CODE & D.SKILL_CODE) > 0
-            ) AND EXISTS (
-                SELECT 1 
-                FROM SKILLCODES S 
-                WHERE S.NAME = 'Python' 
-                AND (S.CODE & D.SKILL_CODE) > 0
-            ) THEN 'A'
-            WHEN EXISTS (
-                SELECT 1 
-                FROM SKILLCODES S 
-                WHERE S.NAME = 'C#' 
-                AND (S.CODE & D.SKILL_CODE) > 0
-            ) THEN 'B'
-            WHEN EXISTS (
-                SELECT 1 
-                FROM SKILLCODES S 
-                WHERE S.CATEGORY = 'Front End' 
-                AND (S.CODE & D.SKILL_CODE) > 0
-            ) THEN 'C'
-            ELSE NULL
-        END AS GRADE,
-        D.ID,
-        D.EMAIL
-    FROM DEVELOPERS D
-) D
-WHERE D.GRADE IS NOT NULL
-ORDER BY D.GRADE ASC, D.ID ASC
+FROM DEVELOPERS D, FRONTEND F, PYTHON P, CSHARP C
+GROUP BY GRADE, D.ID, D.EMAIL
+HAVING GRADE IS NOT NULL
+ORDER BY GRADE ASC, D.ID ASC
