@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 #define FASTIO ios::sync_with_stdio(0), cin.tie(0), cout.tie(0)
 using namespace std;
@@ -28,6 +27,7 @@ void union_par(int x, int y) {
     if (x == y) return;
     if (color[x].size() > color[y].size()) swap(x, y);
     for (auto e : color[x]) color[y].emplace(e);
+    color[x].clear();
     par[x] = y;
 }
 
