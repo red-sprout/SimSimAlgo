@@ -1,6 +1,9 @@
 import java.util.*;
 
 class Solution {
+    
+    private final int MAX = 1_000_000_000;
+    
     private int M, N;
     private int[] dr = {0, -1, 0, 1, 0};
     private int[] dc = {0, 0, -1, 0, 1};
@@ -37,14 +40,14 @@ class Solution {
             }
         }
         for(int j = 0; j < N; ++j) {
-            if(arr[M - 1][j] != 0) return 1_000_000_000;
+            if(arr[M - 1][j] != 0) return MAX;
         }
         return cnt;
     }
     
     private int dfs(int cur, int[][] clockHands) {
         if(cur == N) return simul(clockHands);
-        int res = 1_000_000_000;
+        int res = MAX;
         for(int i = 0; i < 4; ++i) {
             for(int j = 0; j < i; ++j) rotate(clockHands, 0, cur);
             res = Math.min(res, dfs(cur + 1, clockHands) + i);
@@ -56,6 +59,6 @@ class Solution {
     public int solution(int[][] clockHands) {
         M = clockHands.length;
         N = clockHands[0].length;
-        return dfs(0, copy(clockHands));
+        return dfs(0, clockHands);
     }
 }
