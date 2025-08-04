@@ -8,14 +8,9 @@ int main() {
     for (int i = 0; i < n; ++i) cin >> arr[i];
     vector<int> lis;
     for (int i = 0; i < n; ++i) {
-        int l = -1, r = lis.size(), m;
-        while (l + 1 < r) {
-            m = (l + r) / 2;
-            if (lis[m] >= arr[i]) r = m;
-            else l = m;
-        }
-        if (r == lis.size()) lis.emplace_back(arr[i]);
-        else lis[r] = arr[i];
+        auto it = lower_bound(lis.begin(), lis.end(), arr[i]);
+        if (it == lis.end()) lis.emplace_back(arr[i]);
+        else *it = arr[i];
     }
     cout << lis.size() << '\n';
     return 0;
