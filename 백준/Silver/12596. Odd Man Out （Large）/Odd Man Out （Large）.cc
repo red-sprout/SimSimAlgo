@@ -6,19 +6,11 @@ int main() {
     FASTIO;
     int n; cin >> n;
     for (int i = 1; i <= n; i++) {
-        int c, g; cin >> g;
-        map<int, int> mp;
+        int c, res = 0, g; cin >> g;
         while (g--) {
-            cin >> c;
-            if (mp.find(c) == mp.end()) mp[c] = 0;
-            mp[c]++;
+            cin >> c; res ^= c;
         }
-        for (auto it = mp.begin(); it != mp.end(); it++) {
-            if (it->second & 1) {
-                cout << "Case #" << i << ": " << it->first << '\n';
-                break;
-            }
-        }
+        cout << "Case #" << i << ": " << res << '\n';
     }
     return 0;
 }
