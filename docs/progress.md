@@ -104,3 +104,11 @@
 - n8n Form 기반 서버 제출은 보조/실험 경로로 유지한다.
 - 다음 구현은 이벤트 webhook과 submission ID 재검증이며, 이벤트가 없어도 기존 주기 sync로 복구한다.
 - 프로그래머스는 ActionCable/Turnstile 때문에 서버 제출을 기본화하지 않고, MacBook 웹 제출 후 동기화 어댑터를 우선 검증한다.
+
+## AtCoder 공식 제출 목록 즉시 반영
+
+- `submissions/me` contest별 HTML 파서와 인증 client 추가
+- `POST /sync/atcoder/contest` 추가: `contestId`·`problemId`로 최신 AC를 공식 페이지에서 재검증
+- `n8n/workflows/atcoder-contest-sync.json` 추가
+- 실제 `abc472/abc472_e/78637333` 조회로 source·README 생성 확인
+- Docker worker 재빌드·재기동 및 health 확인
