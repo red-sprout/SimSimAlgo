@@ -18,6 +18,8 @@
 
 현재 저장소의 `atcoder-submit` Form workflow는 서버 제출을 시험하기 위한 보조 경로이며, 기본 운영 경로는 로컬 제출이다.
 
+제출 직후 즉시 반영하려면 `n8n/workflows/atcoder-contest-sync.json`을 import한다. 맥북에서 공식 제출 후 폼에 `contestId`와 `problemId`를 입력하면 worker가 해당 contest의 공식 `submissions/me`에서 최신 AC를 다시 확인한다. `submissionId`를 입력하면 특정 제출만 검증한다. 폼을 쓰지 않아도 10분 주기 fallback sync가 계속 동작한다.
+
 ## AtCoder 세션 점검
 
 ### MacBook 로그인

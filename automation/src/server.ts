@@ -8,6 +8,7 @@ import { submitAtCoder, type AtCoderSubmitRequest } from "./core/atcoder-submit.
 import type { Submission } from "./core/submission.js";
 import { writeSubmission } from "./core/repository-writer.js";
 import { GitPublisher } from "./core/git-publisher.js";
+import { AtCoderContestSubmissionsClient, AtCoderSubmissionClient } from "./adapters/atcoder/index.js";
 
 const execFileAsync = promisify(execFile);
 const port = Number(process.env.PORT ?? "3000");
@@ -23,6 +24,28 @@ const server = createServer(async (request, response) => {
   response.setHeader("content-type", "application/json; charset=utf-8");
   if (request.method === "GET" && request.url === "/health") {
     response.end(JSON.stringify({ ok: true, running }));
+    return;
+  }
+  if (request.method === "POST" && request.url === "/sync/atcoder/contest") {
+    if (running) { response.statusCode = 409; response.end(JSON.stringify({ error: "job_already_running" })); return; } running = true;
+    try {
+      const input = await readJson(request) as { contestId?: unknown; problemId?: unknown; submissionId?: unknown };
+      if (typeof input.contestId !== "string" || typeof input.problemId !== "string") { response.statusCode = 400; response.end(JSON.stringify({ error: "contestId and problemId are required" })); return; }
+      const session = process.env.ATCODER_REVEL_SESSION ?? "";
+      const rows = await new AtCoderContestSubmissionsClient(session).fetchContestSubmissions(input.contestId);
+      const candidates = rows.filter((row) => row.problemId === input.problemId && row.verdict === "AC" && (input.submissionId === undefined || row.submissionId === input.submissionId));
+      const selected = candidates.sort((a, b) => Number(b.submissionId) - Number(a.submissionId))[0];
+      if (!selected) { response.statusCode = 404; response.end(JSON.stringify({ error: "accepted_submission_not_found", contestId: input.contestId, problemId: input.problemId })); return; }
+      const detail = await new AtCoderSubmissionClient(session).fetchSubmission(input.contestId, selected.submissionId);
+      const submission: Submission = { site: "atcoder", account: process.env.ATCODER_ACCOUNT ?? "default", submissionId: selected.submissionId, contestId: input.contestId, problemId: selected.problemId, title: selected.title, verdict: "AC", language: selected.language, sourceCode: detail.sourceCode, submittedAt: new Date(selected.submittedAt).toISOString(), problemUrl: `https://atcoder.jp/contests/${input.contestId}/tasks/${selected.problemId}`, submissionUrl: `https://atcoder.jp/contests/${input.contestId}/submissions/${selected.submissionId}`, ...(selected.executionTime ? { executionTime: selected.executionTime } : {}), ...(detail.memory ?? selected.memory ? { memory: detail.memory ?? selected.memory } : {}) };
+      const written = await writeSubmission(process.env.REPOSITORY_ROOT ?? "/repo", submission); const publisher = new GitPublisher(process.env.REPOSITORY_ROOT ?? "/repo");
+      const published = (process.env.GIT_COMMIT ?? "true") === "true" ? await publisher.publish(written.changedFiles, `[AtCoder] ${selected.problemId}: ${selected.title}`, (process.env.GIT_PUSH ?? "true") === "true") : { commitCreated: false, pushed: false };
+      response.end(JSON.stringify({ site: "atcoder", contestId: input.contestId, problemId: selected.problemId, submissionId: selected.submissionId, verdict: "AC", committed: published.commitCreated, pushed: published.pushed, changedFiles: written.changedFiles }));
+    } catch (error) {
+      const failure = error as Error & { stderr?: string; code?: number }; const details = `${failure.stderr ?? ""}\n${failure.message}`;
+      if (/AtCoderAuthenticationError|ATCODER_REVEL_SESSION|HTTP (401|403)/i.test(details)) { try { await notifyDiscordAuthFailure(alertStateFile, process.env.DISCORD_WEBHOOK_URL); } catch (alertError) { console.error(`Discord alert failed: ${(alertError as Error).message}`); } }
+      response.statusCode = 500; response.end(JSON.stringify({ error: "contest_sync_failed", message: failure.message }));
+    } finally { running = false; }
     return;
   }
   if (request.method === "POST" && request.url === "/submit/atcoder") {

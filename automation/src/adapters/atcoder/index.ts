@@ -7,6 +7,7 @@ import {
 import { AtCoderSubmissionClient, type AtCoderSubmissionPage } from "./submission-page.js";
 export * from "./atcoder-problems-client.js";
 export * from "./submission-page.js";
+export * from "./contest-submissions.js";
 
 interface MetadataClient {
   fetchUserSubmissions(account: string, fromEpochSecond: number): Promise<AtCoderSubmissionMetadata[]>;
