@@ -1,0 +1,62 @@
+{
+  "name": "AtCoder Accepted Submission Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "f3ba18ad-49d0-4f0b-b5b0-cafcf20b5593",
+      "name": "Every 10 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {},
+      "id": "685ad7b4-2298-42c5-9a4d-d22e79ab3014",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [260, 460]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://sync-worker:3000/sync/atcoder",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "0cc89367-ddd9-46ce-b403-e56e1366050b",
+      "name": "Run AtCoder Sync",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 380]
+    }
+  ],
+  "connections": {
+    "Every 10 Minutes": {
+      "main": [[{ "node": "Run AtCoder Sync", "type": "main", "index": 0 }]]
+    },
+    "Manual Trigger": {
+      "main": [[{ "node": "Run AtCoder Sync", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Seoul"
+  },
+  "versionId": "30853136-e400-4261-9162-e766849f476f",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}

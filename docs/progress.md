@@ -79,3 +79,13 @@
 - 빈 diff에서는 commit 생략
 - `GIT_COMMIT`, `GIT_PUSH`를 sync CLI에 연결
 - repository 밖 경로와 `.git` 경로 stage 차단
+
+## 2026-08-24 — n8n worker
+
+- n8n과 sync 실행 권한을 분리한 내부 HTTP worker 추가
+- n8n 10분 Schedule Trigger 및 Manual Trigger workflow export 추가
+- Docker Compose 구문과 worker image build 성공
+- worker health endpoint 정상 확인
+- 기존 cursor를 Docker state volume으로 이관
+- 실제 worker sync 결과 `discovered: 0`, `commitCreated: false`, `pushed: true`
+- Deploy Key로 `origin/main` push 성공

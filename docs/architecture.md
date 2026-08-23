@@ -10,6 +10,7 @@
 
 ```text
 n8n Schedule Trigger
+  -> internal HTTP sync worker
   -> site adapter CLI
   -> normalized Submission[]
   -> repository writer
@@ -23,6 +24,13 @@ n8n Schedule Trigger
 - 동시 실행을 제한한다.
 - 성공, 변경 없음, 실패를 구분하고 알림을 보낸다.
 - 사이트 파싱이나 파일 경로 규칙은 갖지 않는다.
+- 저장소, AtCoder cookie, Git Deploy Key에 직접 접근하지 않는다.
+
+### Sync worker
+
+- Docker 내부망의 POST `/sync/atcoder`만 제공하고 host port는 열지 않는다.
+- 동시에 하나의 sync만 허용하며 중복 요청에는 HTTP 409를 반환한다.
+- 저장소와 상태 volume, 읽기 전용 Deploy Key는 worker에만 mount한다.
 
 ### Site adapter
 

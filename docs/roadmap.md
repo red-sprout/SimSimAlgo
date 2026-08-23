@@ -21,12 +21,13 @@
 
 ## Phase 2 — n8n 운영
 
-- [ ] Docker Compose 작성
-- [ ] Schedule/Manual workflow 작성
-- [ ] workflow JSON export
-- [ ] 동시 실행 제한과 retry 적용
+- [x] Docker Compose 작성
+- [x] Schedule/Manual workflow 작성
+- [x] workflow JSON export
+- [x] worker 동시 실행 제한
 - [ ] 인증 만료 및 parser 실패 알림
 - [ ] 재시작 후 상태 유지 검증
+- [x] worker image build 및 내부 HTTP sync 실동작 검증
 
 ## Phase 3 — Programmers
 

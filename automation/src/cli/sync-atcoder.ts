@@ -15,8 +15,9 @@ const session = process.env.ATCODER_REVEL_SESSION;
 if (!session) throw new Error("ATCODER_REVEL_SESSION is required");
 
 const automationRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
-const repositoryRoot = path.resolve(automationRoot, "..");
-const stateStore = new JsonSyncStateStore(path.join(automationRoot, ".state", "sync.json"));
+const repositoryRoot = path.resolve(process.env.REPOSITORY_ROOT ?? path.resolve(automationRoot, ".."));
+const stateFile = path.resolve(process.env.SYNC_STATE_FILE ?? path.join(automationRoot, ".state", "sync.json"));
+const stateStore = new JsonSyncStateStore(stateFile);
 const previousState = await stateStore.get("atcoder", account);
 const adapter = createAtCoderAdapter(session);
 const submissions = await adapter.fetchAcceptedSubmissions(account, previousState?.cursor);

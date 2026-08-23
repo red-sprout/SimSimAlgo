@@ -2,6 +2,7 @@ node_modules/
 automation/dist/
 automation/.state/
 automation/.env
+n8n/.env
 *.log
 
 # Authentication material must never be committed.

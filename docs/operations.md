@@ -42,6 +42,26 @@ GIT_PUSH=true
 
 Git publisher는 writer가 이번 실행에서 변경한 경로만 `git add -- <paths>`로 stage한다. 다른 작업 파일은 자동 커밋하지 않는다.
 
+## n8n Docker 시작
+
+```bash
+cd n8n
+cp .env.example .env
+openssl rand -hex 32
+# 출력값을 .env의 N8N_ENCRYPTION_KEY에 입력
+docker compose up -d --build
+```
+
+기존 로컬 sync cursor가 있다면 최초 1회 worker volume으로 복사해 과거 제출을 다시 조회하지 않게 한다.
+
+```bash
+docker compose cp ../automation/.state/sync.json sync-worker:/state/sync.json
+```
+
+브라우저에서 `http://127.0.0.1:5678`에 접속해 owner 계정을 만든다. `workflows/atcoder-sync.json`을 import하고 수동 실행으로 확인한 다음 workflow를 활성화한다.
+
+worker는 host에 port를 공개하지 않는다. n8n만 내부 주소 `http://sync-worker:3000`으로 접근한다. Git 키, AtCoder cookie, 저장소 mount는 worker에만 제공한다.
+
 ## 장애 대응 원칙
 
 - 인증 실패: credential을 갱신하고 수동 workflow로 재실행한다.
