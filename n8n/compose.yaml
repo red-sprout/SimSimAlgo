@@ -41,7 +41,6 @@ services:
       GIT_COMMITTER_NAME: ${GIT_AUTHOR_NAME:-red-sprout}
       GIT_COMMITTER_EMAIL: ${GIT_AUTHOR_EMAIL:-jjw05015@gmail.com}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
-      DISCORD_MENTION_USER_ID: ${DISCORD_MENTION_USER_ID:-}
       DISCORD_ALERT_STATE_FILE: /state/discord-alert.json
       GIT_SSH_COMMAND: ssh -i /run/secrets/github_deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/tmp/known_hosts
     volumes:
