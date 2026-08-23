@@ -96,7 +96,7 @@
 - `AC`일 때만 기존 저장기와 GitPublisher를 실행한다. `WA`·`RE`·인증 오류에서는 저장소를 변경하지 않는다.
 - 워커 이미지에는 `online-judge-tools`가 포함된다. 세션은 `ATCODER_REVEL_SESSION` 환경변수로만 주입한다.
 
-워크플로우 파일: `n8n/workflows/atcoder-submit.json`
+워크플로우 파일: `n8n/workflows/atcoder-sync.json` (AtCoder 기능 통합본)
 
 ## 전략 전환 — 로컬 제출 중심
 
@@ -109,6 +109,6 @@
 
 - `submissions/me` contest별 HTML 파서와 인증 client 추가
 - `POST /sync/atcoder/contest` 추가: `contestId`·`problemId`로 최신 AC를 공식 페이지에서 재검증
-- `n8n/workflows/atcoder-contest-sync.json` 추가
+- `n8n/workflows/atcoder-sync.json`에 주기 sync·contest 폼·URL webhook·보조 제출 폼 통합
 - 실제 `abc472/abc472_e/78637333` 조회로 source·README 생성 확인
 - Docker worker 재빌드·재기동 및 health 확인

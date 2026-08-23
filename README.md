@@ -46,9 +46,9 @@ flowchart LR
     W -. 성공 .-> X[알림 상태 초기화]
 ```
 
-AtCoder는 MacBook에서 `atcoder-cli`/`oj`로 제출하는 것을 기본으로 합니다. `n8n/workflows/atcoder-submit.json`의 제출 폼은 서버 제출을 시험하기 위한 보조 경로입니다. 어떤 경로든 worker가 AC를 다시 확인한 경우에만 풀이 파일을 만들고 commit/push합니다.
+AtCoder는 MacBook에서 `atcoder-cli`/`oj`로 제출하는 것을 기본으로 합니다. 모든 AtCoder 자동화 경로(주기 sync, contest 반영 폼, URL webhook, 서버 제출 보조 폼)는 `n8n/workflows/atcoder-sync.json` 하나에 통합되어 있습니다.
 
-제출 직후 바로 반영하려면 `n8n/workflows/atcoder-contest-sync.json`을 import하고 contest ID와 problem ID를 입력합니다. worker가 해당 contest의 공식 `submissions/me`에서 최신 AC를 확인하므로 AtCoder Problems API 지연을 기다리지 않아도 됩니다.
+제출 직후 바로 반영하려면 통합 workflow의 contest 반영 폼을 사용하거나 URL webhook을 호출합니다. worker가 해당 contest의 공식 `submissions/me`에서 최신 AC를 확인하므로 AtCoder Problems API 지연을 기다리지 않아도 됩니다.
 
 
 ### 운영 문서

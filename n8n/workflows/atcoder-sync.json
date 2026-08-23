@@ -1,62 +1,52 @@
 {
-  "name": "AtCoder Accepted Submission Sync",
+  "name": "AtCoder Automation",
   "nodes": [
     {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "minutes",
-              "minutesInterval": 10
-            }
-          ]
-        }
-      },
+      "parameters": {"rule": {"interval": [{"field": "minutes", "minutesInterval": 10}]}},
       "id": "f3ba18ad-49d0-4f0b-b5b0-cafcf20b5593",
       "name": "Every 10 Minutes",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [260, 300]
+      "position": [220, 120]
+    },
+    {"parameters": {}, "id": "685ad7b4-2298-42c5-9a4d-d22e79ab3014", "name": "Manual Full Sync", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [220, 260]},
+    {
+      "parameters": {"method": "POST", "url": "http://sync-worker:3000/sync/atcoder", "options": {"timeout": 120000}},
+      "id": "0cc89367-ddd9-46ce-b403-e56e1366050b", "name": "Run Scheduled Sync", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [520, 190]
     },
     {
-      "parameters": {},
-      "id": "685ad7b4-2298-42c5-9a4d-d22e79ab3014",
-      "name": "Manual Trigger",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [260, 460]
+      "parameters": {"path": "atcoder-contest-sync", "formTitle": "AtCoder 제출 반영", "formDescription": "공식 제출 후 contest/problem을 입력하면 최신 AC만 Git에 반영합니다.", "formFields": {"values": [{"fieldLabel": "contestId", "requiredField": true}, {"fieldLabel": "problemId", "requiredField": true}, {"fieldLabel": "submissionId", "requiredField": false}]}},
+      "id": "be95e046-67fb-4dc7-b73b-0d79a6df30da", "name": "Contest Sync Form", "type": "n8n-nodes-base.formTrigger", "typeVersion": 2.2, "position": [220, 430]
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "http://sync-worker:3000/sync/atcoder",
-        "options": {
-          "timeout": 120000
-        }
-      },
-      "id": "0cc89367-ddd9-46ce-b403-e56e1366050b",
-      "name": "Run AtCoder Sync",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [520, 380]
+      "parameters": {"path": "atcoder-contest-sync-event", "httpMethod": "POST", "responseMode": "lastNode", "options": {}},
+      "id": "d0dd07b9-4866-47e7-a59d-22841568cd0d", "name": "Contest URL Webhook", "type": "n8n-nodes-base.webhook", "typeVersion": 2.1, "position": [220, 590]
+    },
+    {
+      "parameters": {"method": "POST", "url": "http://sync-worker:3000/sync/atcoder/contest", "sendBody": true, "specifyBody": "json", "jsonBody": "={{ { contestId: $json.contestId, problemId: $json.problemId, submissionId: $json.submissionId || undefined } }}", "options": {"timeout": 120000}},
+      "id": "d8d7743b-0a91-4f60-9a03-8a7eb0d0a9db", "name": "Verify Contest AC (Form)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [540, 430]
+    },
+    {
+      "parameters": {"method": "POST", "url": "http://sync-worker:3000/sync/atcoder/contest", "sendBody": true, "specifyBody": "json", "jsonBody": "={{ $json.body }}", "options": {"timeout": 120000}},
+      "id": "746bf8d7-68e9-42f1-83e2-c9cc52fcd40d", "name": "Verify Contest AC (Webhook)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [540, 590]
+    },
+    {
+      "parameters": {"path": "atcoder-submit", "formTitle": "AtCoder 서버 제출 (보조)", "formDescription": "기본은 맥북 공식 제출입니다. 이 폼은 실험용입니다.", "formFields": {"values": [{"fieldLabel": "contestId", "requiredField": true}, {"fieldLabel": "problemId", "requiredField": true}, {"fieldLabel": "language", "requiredField": true, "defaultValue": "Java"}, {"fieldLabel": "title", "requiredField": false}, {"fieldLabel": "sourceCode", "requiredField": true, "fieldType": "textarea"}]}},
+      "id": "8cc7d998-3ca8-4d93-9b9e-8a6c5fd8a0a5", "name": "Server Submit Form (Experimental)", "type": "n8n-nodes-base.formTrigger", "typeVersion": 2.2, "position": [220, 760]
+    },
+    {
+      "parameters": {"method": "POST", "url": "http://sync-worker:3000/submit/atcoder", "sendBody": true, "specifyBody": "json", "jsonBody": "={{ { contestId: $json.contestId, problemId: $json.problemId, language: $json.language || 'Java', title: $json.title || '', sourceCode: $json.sourceCode } }}", "options": {"timeout": 180000}},
+      "id": "a9f7a86c-b7fb-4f23-89c5-72bd75eab2f2", "name": "Submit (Experimental)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [540, 760]
     }
   ],
   "connections": {
-    "Every 10 Minutes": {
-      "main": [[{ "node": "Run AtCoder Sync", "type": "main", "index": 0 }]]
-    },
-    "Manual Trigger": {
-      "main": [[{ "node": "Run AtCoder Sync", "type": "main", "index": 0 }]]
-    }
+    "Every 10 Minutes": {"main": [[{"node": "Run Scheduled Sync", "type": "main", "index": 0}]]},
+    "Manual Full Sync": {"main": [[{"node": "Run Scheduled Sync", "type": "main", "index": 0}]]},
+    "Contest Sync Form": {"main": [[{"node": "Verify Contest AC (Form)", "type": "main", "index": 0}]]},
+    "Contest URL Webhook": {"main": [[{"node": "Verify Contest AC (Webhook)", "type": "main", "index": 0}]]},
+    "Server Submit Form (Experimental)": {"main": [[{"node": "Submit (Experimental)", "type": "main", "index": 0}]]}
   },
   "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "timezone": "Asia/Seoul"
-  },
-  "versionId": "30853136-e400-4261-9162-e766849f476f",
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "settings": {"executionOrder": "v1", "timezone": "Asia/Seoul"},
   "tags": []
 }

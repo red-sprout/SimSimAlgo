@@ -16,11 +16,11 @@
 4. worker가 공식 제출 페이지/API에서 AC와 source를 재검증한 뒤에만 writer와 GitPublisher를 실행한다.
 5. 이벤트 전송이 실패해도 10분 주기 fallback sync가 누락된 AC를 수집한다.
 
-현재 저장소의 `atcoder-submit` Form workflow는 서버 제출을 시험하기 위한 보조 경로이며, 기본 운영 경로는 로컬 제출이다.
+AtCoder 관련 기능은 `n8n/workflows/atcoder-sync.json` 하나에 통합되어 있다. 기본 운영 경로는 로컬 제출이며 서버 제출 폼은 보조 경로다.
 
-제출 직후 즉시 반영하려면 `n8n/workflows/atcoder-contest-sync.json`을 import한다. 맥북에서 공식 제출 후 폼에 `contestId`와 `problemId`를 입력하면 worker가 해당 contest의 공식 `submissions/me`에서 최신 AC를 다시 확인한다. `submissionId`를 입력하면 특정 제출만 검증한다. 폼을 쓰지 않아도 10분 주기 fallback sync가 계속 동작한다.
+통합 workflow를 import한 뒤, 제출 직후 contest 반영 폼에 `contestId`와 `problemId`를 입력하면 worker가 해당 contest의 공식 `submissions/me`에서 최신 AC를 다시 확인한다. `submissionId`를 입력하면 특정 제출만 검증한다. 폼을 쓰지 않아도 10분 주기 fallback sync가 계속 동작한다.
 
-폼 입력도 생략하려면 `n8n/workflows/atcoder-contest-sync-webhook.json`을 import하고 workflow를 활성화한다. SSH 터널로 n8n의 5678 포트가 맥북에 연결되어 있다는 전제에서 문제 URL만 전달한다.
+폼 입력도 생략하려면 같은 통합 workflow의 URL webhook을 활성화한다. SSH 터널로 n8n의 5678 포트가 맥북에 연결되어 있다는 전제에서 문제 URL만 전달한다.
 
 ```bash
 curl -fsSL -o /tmp/notify-atcoder-sync.sh https://raw.githubusercontent.com/red-sprout/SimSimAlgo/main/scripts/mac/notify-atcoder-sync.sh
