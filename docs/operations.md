@@ -20,6 +20,27 @@
 
 ## AtCoder 세션 점검
 
+### MacBook 로그인
+
+가장 먼저 공식 브라우저 로그인 방식부터 시도한다. `oj`가 로그인 브라우저를 열고 세션을 저장하며, `acc`는 이 `oj` 설정을 사용한다.
+
+```bash
+oj login --use-browser always https://atcoder.jp/
+oj login --check https://atcoder.jp/contests/abc086/tasks/abc086_a
+acc session
+```
+
+브라우저 자동 열기나 `acc login`이 실패하면 로그인한 브라우저의 AtCoder 쿠키에서 `REVEL_SESSION` 값만 복사한다. 특정 브라우저 확장 기능은 필요 없다. 값은 셸 history에 남기지 말고 다음 스크립트에 숨겨진 입력으로 붙여넣는다.
+
+```bash
+./scripts/mac/import-atcoder-session.sh
+# 프롬프트에 REVEL_SESSION 붙여넣기
+oj login --check https://atcoder.jp/contests/abc086/tasks/abc086_a
+acc session
+```
+
+이 스크립트는 `acc`의 `session.json`과 `oj`의 LWP `cookie.jar`를 동시에 갱신하고 파일 권한을 600으로 설정한다. 세션은 만료될 수 있으므로 실패하면 같은 절차로 다시 import한다.
+
 `automation/.env.example`을 `automation/.env`로 복사한 후 값을 로컬에서 입력한다. `.env`는 Git ignore 대상이다.
 
 ```bash
