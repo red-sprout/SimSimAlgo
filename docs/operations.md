@@ -39,7 +39,16 @@ oj login --check https://atcoder.jp/contests/abc086/tasks/abc086_a
 acc session
 ```
 
-이 스크립트는 `acc`의 `session.json`과 `oj`의 LWP `cookie.jar`를 동시에 갱신하고 파일 권한을 600으로 설정한다. 세션은 만료될 수 있으므로 실패하면 같은 절차로 다시 import한다.
+macOS에서는 `~/Library/Preferences/atcoder-cli-nodejs/session.json`과 `~/Library/Application Support/online-judge-tools/cookie.jar`를 사용하고, Linux에서는 XDG 기본 경로를 사용한다. 세션은 만료될 수 있으므로 실패하면 같은 절차로 다시 import한다.
+
+Selenium 방식도 사용할 수 있지만 별도 설치가 필요하다.
+
+```bash
+python3 -m pip install --user selenium
+oj login --use-browser always https://atcoder.jp/
+```
+
+macOS Safari WebDriver를 사용할 때는 Safari의 개발자 메뉴에서 원격 자동화를 허용해야 한다. 브라우저 드라이버 설정을 피하려면 위의 쿠키 import 방식을 사용한다.
 
 `automation/.env.example`을 `automation/.env`로 복사한 후 값을 로컬에서 입력한다. `.env`는 Git ignore 대상이다.
 

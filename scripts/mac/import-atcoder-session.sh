@@ -4,8 +4,13 @@ set -euo pipefail
 USER_HOME="$(cd ~ && pwd)"
 CONFIG_ROOT="${XDG_CONFIG_HOME:-${USER_HOME}/.config}"
 DATA_ROOT="${XDG_DATA_HOME:-${USER_HOME}/.local/share}"
-ACC_FILE="${CONFIG_ROOT}/atcoder-cli-nodejs/session.json"
-OJ_FILE="${DATA_ROOT}/online-judge-tools/cookie.jar"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  ACC_FILE="${ACC_SESSION_FILE:-${USER_HOME}/Library/Preferences/atcoder-cli-nodejs/session.json}"
+  OJ_FILE="${OJ_COOKIE_FILE:-${USER_HOME}/Library/Application Support/online-judge-tools/cookie.jar}"
+else
+  ACC_FILE="${ACC_SESSION_FILE:-${CONFIG_ROOT}/atcoder-cli-nodejs/session.json}"
+  OJ_FILE="${OJ_COOKIE_FILE:-${DATA_ROOT}/online-judge-tools/cookie.jar}"
+fi
 
 if [[ ! -t 0 ]]; then
   IFS= read -r REVEL_SESSION
