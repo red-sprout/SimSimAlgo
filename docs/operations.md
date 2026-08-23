@@ -64,6 +64,8 @@ worker는 host에 port를 공개하지 않는다. n8n만 내부 주소 `http://s
 
 현재 n8n은 SSH loopback 개발 접속만 허용하므로 `N8N_SECURE_COOKIE=false`로 설정되어 있다. 인터넷에 직접 노출하거나 HTTPS reverse proxy를 붙이는 배포에서는 이 설정을 제거하고 TLS를 사용해야 한다.
 
+실행 기록은 `EXECUTIONS_DATA_PRUNE=true`로 자동 정리한다. 성공·실패 결과를 확인할 수 있도록 유지하되 최대 168시간(7일) 또는 1000건까지만 보관한다. 소스 코드 자체는 execution payload에 포함되지 않고 worker 응답의 요약만 반환된다.
+
 ## 장애 대응 원칙
 
 - 인증 실패: credential을 갱신하고 수동 workflow로 재실행한다.
