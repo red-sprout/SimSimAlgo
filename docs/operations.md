@@ -50,6 +50,12 @@ oj login --use-browser always https://atcoder.jp/
 
 macOS Safari WebDriver를 사용할 때는 Safari의 개발자 메뉴에서 원격 자동화를 허용해야 한다. 브라우저 드라이버 설정을 피하려면 위의 쿠키 import 방식을 사용한다.
 
+### Cloudflare 차단 시
+
+Cloudflare/Turnstile 화면이 나오면 `oj login`과 Selenium을 반복 실행하지 않는다. 일반 브라우저에서 `https://atcoder.jp/`를 직접 열어 challenge를 완료하고 로그인한 뒤, 브라우저 저장소에서 `REVEL_SESSION`만 가져와 import한다. VPN·iCloud Private Relay를 사용 중이면 잠시 끄고 시도하며, 일반 브라우저에서도 계속 차단되면 네트워크/IP가 일시 제한된 것이므로 재시도보다 잠시 기다린다.
+
+세션 확인 요청 자체가 Cloudflare에 걸릴 수 있으므로 `oj login --check`가 실패해도 곧바로 세션 만료로 판단하지 않는다. `acc session`은 로컬 설정 확인이고, 실제 동기화는 worker의 브라우저 호환 HTTP 요청으로 검증한다.
+
 `automation/.env.example`을 `automation/.env`로 복사한 후 값을 로컬에서 입력한다. `.env`는 Git ignore 대상이다.
 
 ```bash
