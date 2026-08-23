@@ -31,6 +31,21 @@ n8n (10분 주기)
 
 현재 자동 동기화는 AtCoder부터 운영 중이며, 프로그래머스는 인증·제출 구조를 조사하며 연동 방식을 정리하고 있습니다.
 
+
+```mermaid
+flowchart LR
+    S[스케줄 트리거<br/>10분마다] --> N[n8n workflow]
+    N --> W[sync-worker]
+    W --> A[AtCoder<br/>제출·문제·소스 조회]
+    A --> V{새 풀이인가?}
+    V -- 예 --> R[README·소스 저장]
+    R --> G[Git commit / push]
+    V -- 아니오 --> D[변경 없음]
+    W -. 인증 실패 .-> C[Discord @everyone 알림]
+    W -. 성공 .-> X[알림 상태 초기화]
+```
+
+
 ### 운영 문서
 
 - [진행 상황](./docs/progress.md)
