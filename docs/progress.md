@@ -89,3 +89,11 @@
 - 기존 cursor를 Docker state volume으로 이관
 - 실제 worker sync 결과 `discovered: 0`, `commitCreated: false`, `pushed: true`
 - Deploy Key로 `origin/main` push 성공
+## AtCoder 제출 자동화
+
+- n8n Form Trigger에서 `contestId`, `problemId`, `language`, `sourceCode`를 입력한다.
+- `sync-worker`가 임시 디렉터리에서 `oj submit`을 실행하고 제출 페이지의 판정을 폴링한다.
+- `AC`일 때만 기존 저장기와 GitPublisher를 실행한다. `WA`·`RE`·인증 오류에서는 저장소를 변경하지 않는다.
+- 워커 이미지에는 `online-judge-tools`가 포함된다. 세션은 `ATCODER_REVEL_SESSION` 환경변수로만 주입한다.
+
+워크플로우 파일: `n8n/workflows/atcoder-submit.json`

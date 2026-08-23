@@ -45,6 +45,8 @@ flowchart LR
     W -. 성공 .-> X[알림 상태 초기화]
 ```
 
+AtCoder는 `n8n/workflows/atcoder-submit.json`을 가져오면 제출 폼도 사용할 수 있습니다. 폼에 Java 코드를 입력하면 워커가 `oj`로 제출하고, 판정이 `AC`인 경우에만 풀이 파일을 만들고 commit/push합니다. `WA`·런타임 오류·인증 실패에서는 Git 변경이 발생하지 않습니다.
+
 
 ### 운영 문서
 

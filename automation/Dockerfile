@@ -7,9 +7,12 @@ COPY src ./src
 RUN npm run build
 
 FROM node:22-alpine
-RUN apk add --no-cache git openssh-client
+RUN apk add --no-cache git openssh-client python3 py3-pip \
+    && python3 -m venv /opt/oj \
+    && /opt/oj/bin/pip install --no-cache-dir online-judge-tools
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PATH="/opt/oj/bin:${PATH}"
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
