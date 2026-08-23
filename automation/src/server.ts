@@ -45,7 +45,7 @@ const server = createServer(async (request, response) => {
     console.error(failure.stderr || failure.message);
     const details = `${failure.stderr ?? ""}\n${failure.message}`;
     if (/AtCoderAuthenticationError|ATCODER_REVEL_SESSION|HTTP (401|403)/i.test(details)) {
-      try { await notifyDiscordAuthFailure(alertStateFile, process.env.DISCORD_WEBHOOK_URL); }
+      try { await notifyDiscordAuthFailure(alertStateFile, process.env.DISCORD_WEBHOOK_URL, process.env.DISCORD_MENTION_USER_ID); }
       catch (alertError) { console.error(`Discord alert failed: ${(alertError as Error).message}`); }
     }
     response.statusCode = 500;
