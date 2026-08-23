@@ -62,7 +62,7 @@ export class GitPublisher {
       await this.git(["add", "--", ...relativePaths]);
       const diff = await this.git(["diff", "--cached", "--quiet", "--"], [0, 1]);
       if (diff.exitCode === 1) {
-        await this.git(["commit", "-m", message, "--"]);
+        await this.git(["commit", "-m", message, "--", ...relativePaths]);
         commitCreated = true;
       }
     }

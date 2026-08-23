@@ -38,4 +38,24 @@ describe("Git publisher", () => {
     const publisher = new GitPublisher(root);
     await assert.rejects(() => publisher.publish([path.join(root, "..", "secret")], "bad", false), /outside repository/);
   });
+
+  it("does not absorb an unrelated file already staged by another process", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "simsimalgo-git-staged-"));
+    await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
+    await writeFile(path.join(root, "README.md"), "initial\n");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-q", "-m", "initial"], { cwd: root });
+    const included = path.join(root, "included.txt");
+    const unrelated = path.join(root, "unrelated.txt");
+    await writeFile(included, "included\n");
+    await writeFile(unrelated, "unrelated\n");
+    await execFileAsync("git", ["add", "--", unrelated], { cwd: root });
+
+    await new GitPublisher(root).publish([included], "only included", false);
+    const committed = await execFileAsync("git", ["show", "--pretty=", "--name-only", "HEAD"], { cwd: root });
+    assert.equal(committed.stdout.trim(), "included.txt");
+    assert.match((await execFileAsync("git", ["status", "--short"], { cwd: root })).stdout, /A  unrelated\.txt/);
+  });
 });
