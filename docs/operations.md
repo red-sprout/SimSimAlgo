@@ -39,6 +39,15 @@ oj login --check https://atcoder.jp/contests/abc086/tasks/abc086_a
 acc session
 ```
 
+맥북에 이 저장소가 없다면 clone하지 않고 스크립트만 받아도 된다.
+
+```bash
+curl -fsSL -o /tmp/import-atcoder-session.sh https://raw.githubusercontent.com/red-sprout/SimSimAlgo/main/scripts/mac/import-atcoder-session.sh
+chmod 700 /tmp/import-atcoder-session.sh
+/tmp/import-atcoder-session.sh
+rm -f /tmp/import-atcoder-session.sh
+```
+
 macOS에서는 `~/Library/Preferences/atcoder-cli-nodejs/session.json`과 `~/Library/Application Support/online-judge-tools/cookie.jar`를 사용하고, Linux에서는 XDG 기본 경로를 사용한다. 세션은 만료될 수 있으므로 실패하면 같은 절차로 다시 import한다.
 
 Selenium 방식도 사용할 수 있지만 별도 설치가 필요하다.
