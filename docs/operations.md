@@ -20,6 +20,15 @@
 
 제출 직후 즉시 반영하려면 `n8n/workflows/atcoder-contest-sync.json`을 import한다. 맥북에서 공식 제출 후 폼에 `contestId`와 `problemId`를 입력하면 worker가 해당 contest의 공식 `submissions/me`에서 최신 AC를 다시 확인한다. `submissionId`를 입력하면 특정 제출만 검증한다. 폼을 쓰지 않아도 10분 주기 fallback sync가 계속 동작한다.
 
+폼 입력도 생략하려면 `n8n/workflows/atcoder-contest-sync-webhook.json`을 import하고 workflow를 활성화한다. SSH 터널로 n8n의 5678 포트가 맥북에 연결되어 있다는 전제에서 문제 URL만 전달한다.
+
+```bash
+curl -fsSL -o /tmp/notify-atcoder-sync.sh https://raw.githubusercontent.com/red-sprout/SimSimAlgo/main/scripts/mac/notify-atcoder-sync.sh
+chmod 700 /tmp/notify-atcoder-sync.sh
+/tmp/notify-atcoder-sync.sh https://atcoder.jp/contests/abc472/tasks/abc472_e
+rm -f /tmp/notify-atcoder-sync.sh
+```
+
 ## AtCoder 세션 점검
 
 ### MacBook 로그인
