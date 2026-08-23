@@ -97,3 +97,10 @@
 - 워커 이미지에는 `online-judge-tools`가 포함된다. 세션은 `ATCODER_REVEL_SESSION` 환경변수로만 주입한다.
 
 워크플로우 파일: `n8n/workflows/atcoder-submit.json`
+
+## 전략 전환 — 로컬 제출 중심
+
+- 기본 경로를 `MacBook에서 작성·테스트·제출 → N100에서 AC 재검증·Git 반영`으로 변경한다.
+- n8n Form 기반 서버 제출은 보조/실험 경로로 유지한다.
+- 다음 구현은 이벤트 webhook과 submission ID 재검증이며, 이벤트가 없어도 기존 주기 sync로 복구한다.
+- 프로그래머스는 ActionCable/Turnstile 때문에 서버 제출을 기본화하지 않고, MacBook 웹 제출 후 동기화 어댑터를 우선 검증한다.

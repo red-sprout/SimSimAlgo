@@ -1,12 +1,22 @@
 # Operations
 
-## 예정 실행 방식
+## 실행 방식
 
 - n8n이 5~10분 간격으로 sync CLI를 실행한다.
 - 같은 저장소에 대한 workflow 동시 실행은 1개로 제한한다.
 - 결과는 `changed`, `unchanged`, `failed`로 구분한다.
 - 일시적인 네트워크 오류만 지수 backoff로 재시도한다.
 - 인증 실패와 parser 실패는 자동 재시도 횟수를 제한하고 운영자에게 알린다.
+
+## 권장 제출 흐름
+
+1. MacBook에서 에디터로 풀이를 작성한다.
+2. AtCoder는 `oj test`로 샘플을 확인한 뒤 `acc submit` 또는 `oj submit`으로 제출한다.
+3. 제출 이벤트에는 사이트·계정·submission ID만 n8n에 전달한다. source와 AC 여부는 전달값을 신뢰하지 않는다.
+4. worker가 공식 제출 페이지/API에서 AC와 source를 재검증한 뒤에만 writer와 GitPublisher를 실행한다.
+5. 이벤트 전송이 실패해도 10분 주기 fallback sync가 누락된 AC를 수집한다.
+
+현재 저장소의 `atcoder-submit` Form workflow는 서버 제출을 시험하기 위한 보조 경로이며, 기본 운영 경로는 로컬 제출이다.
 
 ## AtCoder 세션 점검
 

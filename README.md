@@ -18,7 +18,7 @@
 
 ## 자동화
 
-n8n이 주기적으로 풀이 사이트를 확인하고, 새 풀이를 저장한 뒤 Git commit/push까지 수행합니다.
+n8n이 제출 결과를 확인하고, AC인 풀이만 저장한 뒤 Git commit/push까지 수행합니다. 작성·로컬 테스트·제출은 MacBook에서 수행하는 로컬 우선 구조입니다.
 
 ```text
 n8n (10분 주기)
@@ -34,7 +34,8 @@ n8n (10분 주기)
 
 ```mermaid
 flowchart LR
-    S[스케줄 트리거<br/>10분마다] --> N[n8n workflow]
+    M[MacBook<br/>작성·테스트·제출] --> N[n8n webhook]
+    S[스케줄 fallback<br/>10분마다] --> N
     N --> W[sync-worker]
     W --> A[AtCoder<br/>제출·문제·소스 조회]
     A --> V{새 풀이인가?}
@@ -45,7 +46,7 @@ flowchart LR
     W -. 성공 .-> X[알림 상태 초기화]
 ```
 
-AtCoder는 `n8n/workflows/atcoder-submit.json`을 가져오면 제출 폼도 사용할 수 있습니다. 폼에 Java 코드를 입력하면 워커가 `oj`로 제출하고, 판정이 `AC`인 경우에만 풀이 파일을 만들고 commit/push합니다. `WA`·런타임 오류·인증 실패에서는 Git 변경이 발생하지 않습니다.
+AtCoder는 MacBook에서 `atcoder-cli`/`oj`로 제출하는 것을 기본으로 합니다. `n8n/workflows/atcoder-submit.json`의 제출 폼은 서버 제출을 시험하기 위한 보조 경로입니다. 어떤 경로든 worker가 AC를 다시 확인한 경우에만 풀이 파일을 만들고 commit/push합니다.
 
 
 ### 운영 문서

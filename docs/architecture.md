@@ -2,25 +2,28 @@
 
 ## 목표
 
-브라우저 확장 프로그램에 의존하지 않고 PS 사이트의 새 AC 제출을 주기적으로 수집하여 문제 설명과 소스 코드를 Git에 반영한다.
+풀이 작성과 제출은 개발 머신에서 자연스럽게 수행하고, n8n/N100은 제출 결과 검증·수집·Git 반영을 담당한다. 특정 브라우저 확장 프로그램에는 의존하지 않는다.
 
 1차 대상은 AtCoder이며, 공통 파이프라인 검증 후 프로그래머스를 연결한다.
 
 ## 구성
 
 ```text
-n8n Schedule Trigger
-  -> internal HTTP sync worker
-  -> site adapter CLI
-  -> normalized Submission[]
+MacBook (IntelliJ/CLI, local test, submit)
+  -> submission event (site/account/submission id)
+  -> n8n webhook or scheduled fallback
+  -> sync-worker (official page/API verifies AC)
+  -> normalized Submission
   -> repository writer
   -> Git commit/push
-  -> execution result / alert
+  -> Discord result/alert
 ```
+
+주기 수집은 이벤트가 누락되어도 복구할 수 있는 fallback이다. 이벤트 payload의 `verdict`나 source를 신뢰하지 않고, worker가 사이트에서 다시 확인한 `submissionId`만 저장한다.
 
 ### n8n
 
-- 실행 주기와 수동 실행 webhook을 관리한다.
+- 로컬 제출 이벤트와 주기 fallback을 관리한다.
 - 동시 실행을 제한한다.
 - 성공, 변경 없음, 실패를 구분하고 알림을 보낸다.
 - 사이트 파싱이나 파일 경로 규칙은 갖지 않는다.
@@ -28,7 +31,7 @@ n8n Schedule Trigger
 
 ### Sync worker
 
-- Docker 내부망의 POST `/sync/atcoder`만 제공하고 host port는 열지 않는다.
+- Docker 내부망의 sync/submit-event API만 제공하고 host port는 열지 않는다.
 - 동시에 하나의 sync만 허용하며 중복 요청에는 HTTP 409를 반환한다.
 - 저장소와 상태 volume, 읽기 전용 Deploy Key는 worker에만 mount한다.
 
@@ -66,3 +69,9 @@ AtCoder/{contestId}/{problemId}/main.{extension}
 - 브라우저 로그인이 필요한 경우 Playwright는 세션 생성에만 사용한다.
 - 주기 수집은 가능한 한 저장된 세션을 사용하는 HTTP 요청으로 수행한다.
 - 세션과 credential은 n8n Credential 또는 Docker secret에 보관한다.
+
+### 제출 위치
+
+- AtCoder: MacBook에 `atcoder-cli`와 `oj`를 설치해 로컬 테스트 후 제출한다.
+- Programmers: IntelliJ에서 작성·검증 후 공식 웹 제출을 우선 사용한다. 제출 UI가 ActionCable/Turnstile에 의존하므로 서버가 브라우저 제출을 흉내 내는 방식은 기본 경로로 삼지 않는다.
+- MacBook은 제출용 세션, N100은 동기화용 세션을 별도로 보관할 수 있다.
