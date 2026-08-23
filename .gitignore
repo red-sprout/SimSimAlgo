@@ -1,0 +1,10 @@
+node_modules/
+automation/dist/
+automation/.state/
+automation/.env
+*.log
+
+# Authentication material must never be committed.
+**/storage-state.json
+**/cookies.json
+**/*.session.json

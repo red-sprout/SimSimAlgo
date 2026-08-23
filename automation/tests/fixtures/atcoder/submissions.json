@@ -1,0 +1,38 @@
+[
+  {
+    "id": 78606201,
+    "epoch_second": 1787401235,
+    "problem_id": "abc472_c",
+    "contest_id": "abc472",
+    "user_id": "sprout6626",
+    "language": "Java24 (OpenJDK 24.0.2)",
+    "point": 0,
+    "length": 922,
+    "result": "RE",
+    "execution_time": 173
+  },
+  {
+    "id": 78609006,
+    "epoch_second": 1787401500,
+    "problem_id": "abc472_c",
+    "contest_id": "abc472",
+    "user_id": "sprout6626",
+    "language": "Java24 (OpenJDK 24.0.2)",
+    "point": 300,
+    "length": 928,
+    "result": "AC",
+    "execution_time": 186
+  },
+  {
+    "id": 78637333,
+    "epoch_second": 1787405971,
+    "problem_id": "abc472_e",
+    "contest_id": "abc472",
+    "user_id": "sprout6626",
+    "language": "Java24 (OpenJDK 24.0.2)",
+    "point": 450,
+    "length": 2163,
+    "result": "AC",
+    "execution_time": 513
+  }
+]
